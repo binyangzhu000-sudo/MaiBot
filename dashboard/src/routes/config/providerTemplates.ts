@@ -274,6 +274,19 @@ export const PROVIDER_TEMPLATES: ProviderTemplate[] = [
     display_name: 'Perplexity AI',
     // Perplexity 不支持 /models 端点，自动获取失败后会提示手动填写
   },
+  {
+    id: 'atlascloud',
+    name: 'Atlas Cloud',
+    base_url: 'https://api.atlascloud.ai/v1',
+    client_type: 'openai',
+    allowed_client_types: ['openai', 'openai_responses'],
+    display_name: 'Atlas Cloud',
+    modelFetcher: { endpoint: '/models', parser: 'openai' },
+    // 不配 thinking：同一网关下各模型要求的思考参数互不兼容——glm-5.3-flash 对
+    // enable_thinking 和 thinking.type 直接回 400，qwen3.5-flash 只认这两个，
+    // deepseek-v4-flash 三种都收但都关不掉。thinking 是按提供商配的，配任何一种
+    // 都会让另一部分模型的开关变成报错按钮，故留空（留空即不显示思考开关）。
+  },
 
   // 自定义选项
   {

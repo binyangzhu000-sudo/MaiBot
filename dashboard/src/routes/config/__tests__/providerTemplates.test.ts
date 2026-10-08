@@ -31,6 +31,23 @@ describe('providerTemplates', () => {
     expect(template?.modelFetcher).toEqual({ endpoint: '/models', parser: 'openai' })
   })
 
+  it('按 base_url 命中 Atlas Cloud 模板并保留其 Responses 客户端选项', () => {
+    const template = findTemplateByBaseUrl('https://api.atlascloud.ai/v1/')
+
+    expect(template?.id).toBe('atlascloud')
+    expect(template?.client_type).toBe('openai')
+    expect(template?.allowed_client_types).toContain('openai_responses')
+    expect(template?.modelFetcher).toEqual({ endpoint: '/models', parser: 'openai' })
+  })
+
+  it('Atlas Cloud 不暴露思考开关，因为同网关下各模型的思考参数互不兼容', () => {
+    const template = findTemplateByBaseUrl('https://api.atlascloud.ai/v1')
+
+    expect(template?.thinking).toBeUndefined()
+    expect(resolveThinkingFormatForModel(template, 'deepseek-ai/deepseek-v4-flash')).toBeNull()
+    expect(resolveThinkingFormatForModel(template, 'zai-org/glm-5.3-flash')).toBeNull()
+  })
+
   it('未配置 modelFetcher 的内置模板也默认乐观尝试 /models', () => {
     const template = resolveModelFetcherTemplate('https://api.anthropic.com/v1', 'openai')
 
